@@ -27,43 +27,6 @@
 ####################
 
 /**
- * Atalho para a função mysql_escape_string
- * 
- * @name escape
- * @author php-br, canal brasileiro de PHP no IRC <irc.freenode.net>
- * @param string $string		//troquei de $n para $string, assim fica mais semantico by LeoCaseiro
- * @return string
- */
-function escape($string){
-	return mysql_escape_string($string);
-}
-
-/**
- * Atalho do mysql_num_rows
- *
- * @name total
- * @param string $query
- * @return int $num
- */
-function total($query){
-	$num = mysql_num_rows($query);
-	return $num;
-}
-
-
-/**
- * Atalho para função mysql_fetch_array
- * 
- * @name fetch
- * @param string $query
- * @return array
- */
-function fetch($query){
-	$fetch = mysql_fetch_array($query);
-	return $fetch;
-}
-
-/**
  * Resumo da função mysql_real_escape_string
  *
  * @name str
@@ -76,36 +39,6 @@ function str($nome){
 	$filtro = mysql_real_escape_string($filtro);
 	return $filtro;
 }
-
-
-/**
- * Atalho da função echo
- *
- * @name e
- * @param string $texto
- * @return string
- */
-function e($texto){
-	echo $texto;
-}
-
-/**
- * Imprime um parágrafo centralizado
- *
- * @name p
- * @param string $texto
- * @param bool $red	caso for true, exibe texto em vermelho
- */
-function p($texto, $red = false){ //(deixei por default o normal, assim...basta digitar p("escrevi aqui"); //Sem precisar do $red
-	if(!$red){ //mensagem normal
-		e("<p align=\"center\">$texto</p>");
-	}elseif($red){ //mensagem de erro
-		e("<p align=\"center\" style=\"color: red\">$texto</p>");
-	}else{
-		echo "<p>$texto</p>";
-	}
-}
-
 
 ####################
 ### LOGIN DE USUÁRIO ###
@@ -772,10 +705,13 @@ function gerauf($tipo, $selecione){ //Acho que poderia melhorar essa função us
 ##################
 ### PLUGINS
 /* para adicionar novas extensões, adicione as seguintes linhas abaixo:
-if(file_exists("nomedoarquivo.php")){
-	include("nomedoarquivo.php");
+if(file_exists("plugins/nomedoarquivo.php")){
+	include("plugins/nomedoarquivo.php");
 }
 */
+if(file_exists("plugins/aliases.php")){
+	include("plugins/aliases.php");
+}
 
 /**
  * Mostra mensagem de informação usando jqueryui.com. Baixe a biblioteca em http://jqueryui.com para usar esta função.
