@@ -50,14 +50,12 @@ function str($nome){
  * @name login
  * @param string $usuario
  * @param string $senha
- * @param string $tabela_de_usuarios
- * @param string $tabela_de_sessoes
  * @param string $destino
  */
-function login($usuario, $senha, $tabela_de_usuarios, $tabela_de_sessoes, $destino){
+function login($usuario, $senha, $destino){
 	//verifica se o USUÁRIO e a senha constam na tabela
 	echo "Verificando usu&aacute;rio ... ";
-	$sel = sel($tabela_de_usuarios,"usuario = '$usuario' and senha = '$senha'","","");
+	$sel = sel("usuarios","usuario = '$usuario' and senha = '$senha'","","");
 	echo "<b>ok</b><br>";
 	if(mysql_num_rows($sel) == 0){//se não existir, mostra a mensagem abaixo
 		echo "<i>Este usu&aacute;rio n&atilde;o existe!</i><br><br>";
@@ -70,11 +68,9 @@ function login($usuario, $senha, $tabela_de_usuarios, $tabela_de_sessoes, $desti
 		$_SESSION["senha"] = $senha;
 		echo "<b>ok</b><br>";
 		//guarda um valor de sessão único para gravar que o USUÁRIO está logado
-		if($tabela_de_controle_de_sessoes != ""){
-			$_SESSION["idsession"] = date("H") + date("i") + date("s") + date("d") + date("m") + date("Y");
-			$idsession = $_SESSION["idsession"];
-			ins($tabela_de_controle_de_sessoes,"usuario, senha, sessao, status","'$usuario', '$senha', '$idsession','online'");
-		}
+		$_SESSION["idsession"] = date("H") + date("i") + date("s") + date("d") + date("m") + date("Y");
+		$idsession = $_SESSION["idsession"];
+		ins("sessoes","usuario, senha, sessao","'$usuario', '$senha', '$idsession'");
 		echo "Redirecionando ... ";
 		echo "<meta http-equiv=\"refresh\" content=\"0;URL=$destino\">";
 		echo "<b>ok</b>";
@@ -88,31 +84,18 @@ function login($usuario, $senha, $tabela_de_usuarios, $tabela_de_sessoes, $desti
  * @name logoff
  * @param sting $usuario
  * @param string $senha	//na minha opinião, este valor é desnecessário para esta função By LeoCaseiro
- * @param string $tabela_de_usuarios
- * @param string $tabela_de_sessoes
  * @param string $destino
  */
-function logoff($usuario, $senha, $tabela_de_usuarios, $tabela_de_sessoes, $destino){
-	if($tabela_de_sessoes != ""){
-		$ids = $_SESSION["idsession"];
-		$sel = sel($tabela_de_sessoes,"ids = '$ids' and usuario = '$usuario and senha = '$senha'","","");
-		if(total($sel) != 0){
-			$r = fetch($sel);
-			$del = del($tabela_de_sessoes,$r["id"]);
-			$_SESSION["idsession"] = "";
-			$_SESSION["login"] = "";
-			$_SESSION["senha"] = "";
-			echo "Usu&aacute;rio desautenticado...";
-		}
-	}else{
-		$login = $_SESSION["login"];
-		$senha = $_SESSION["senha"];
-		$sel = sel($tabela_de_usuarios,"login = '$login' and senha = '$senha'","","");
-		if(total($sel) > 0){
-			$_SESSION["login"] = "";
-			$_SESSION["senha"] = "";
-			echo "Usu&aacute;rio desautenticado...";
-		}
+function logoff($usuario, $senha, $destino){
+	$ids = $_SESSION["idsession"];
+	$sel = sel("sessoes","ids = '$ids' and usuario = '$usuario and senha = '$senha'","","");
+	if(total($sel) != 0){
+		$r = fetch($sel);
+		$del = del("sessoes",$r["id"]);
+		$_SESSION["idsession"] = "";
+		$_SESSION["login"] = "";
+		$_SESSION["senha"] = "";
+		echo "Usu&aacute;rio desautenticado...";
 	}
 }
 
@@ -120,12 +103,10 @@ function logoff($usuario, $senha, $tabela_de_usuarios, $tabela_de_sessoes, $dest
  * Verifica se o USUÁRIO está autenticado e o redireciona para a página de login
  *
  * @name is_autenticado	
- * @param string $tabela_de_usuarios
  * @param string $destino
- * @param string $tabela_de_sessoes
  */
-function is_autenticado($tabela_de_usuarios, $destino, $tabela_de_sessoes) {
-	if(is_on($tabela_de_usuarios,$tabela_de_sessoes) == false){
+function is_autenticado($destino) {
+	if(is_on("usuarios") == false){
 		e("Voc&ecirc; n&atilde;o est&aacute; logado! Redirecionando...");
 		e("<meta http-equiv=\"refresh\" content=\"0;URL=$destino\">");
 	}
@@ -136,25 +117,19 @@ function is_autenticado($tabela_de_usuarios, $destino, $tabela_de_sessoes) {
  * Verifica se o USUÁRIO está autenticado
  *
  * @name is_on
- * @param string $tabela_de_usuarios
- * @param bool $tabela_de_sessoes caso for true, verifica autenticação através de tabela de controle de sessões no banco de dados
  * @return bool
  */
-function is_on($tabela_de_usuarios, $tabela_de_sessoes = false){
+function is_on(){
 	$login = str($_SESSION["login"]);
 	$senha = str($_SESSION["senha"]);
-	$sel = sel($tabela_de_usuarios,"usuario = '$login' and senha = '$senha'","","");
+	$sel = sel("usuarios","usuario = '$login' and senha = '$senha'","","");
 	if(total($sel) == 0){
 		return false;
 	}else{
-		if($tabela_de_sessoes != ""){
-			$ids = $_SESSION["idsession"];
-			$sel = sel($tabela_de_sessoes,"ids = '$ids' and usuario = '$usuario and senha = '$senha'","","");
-			if(total($sel) == 0){
-				return false;
-			}else{
-				return true;
-			}
+		$ids = $_SESSION["idsession"];
+		$sel = sel("sessoes","ids = '$ids' and usuario = '$usuario and senha = '$senha'","","");
+		if(total($sel) == 0){
+			return false;
 		}else{
 			return true;
 		}
@@ -712,41 +687,3 @@ if(file_exists("plugins/nomedoarquivo.php")){
 if(file_exists("plugins/aliases.php")){
 	include("plugins/aliases.php");
 }
-
-/**
- * Mostra mensagem de informação usando jqueryui.com. Baixe a biblioteca em http://jqueryui.com para usar esta função.
- * @name info
- * @since v. r2
- * @param string $txt
- * @example info("Cadastro efetuado com sucesso!");
- * @return string
- */
-function info($txt,$width=false){
-    if($width == true){ $width = "width: ".$width."px"; }
-    e("<div class=\"ui-widget\" style=\"margin-top: 3px;$width\">");
-    e("<div class=\"ui-state-highlight ui-corner-all\" style=\"padding: 5px;\">");
-    e("<span class=\"ui-icon ui-icon-info\" style=\"float: left; margin-right: 0.3em;\"></span>");
-    e($txt);
-    e("</div>");
-    e("</div>");
-}
-
-/**
- * Mostra mensagem de erro usando jqueryui.com. Baixe a biblioteca em http://jqueryui.com para usar esta função.
- * @name error
- * @since v. r2
- * @param string $txt
- * @example error("Você não preencheu o campo e-mail!");
- * @return string
- */
-function error($txt,$width=false){
-    if($width == true){ $width = "width: ".$width."px"; }
-    e("<div class=\"ui-widget\" style=\"margin-top: 3px;$width\">");
-    e("<div class=\"ui-state-error ui-corner-all\" style=\"padding: 5px;\">");
-    e("<span class=\"ui-icon ui-icon-alert\" style=\"float: left; margin-right: 0.3em;\"></span>");
-    e($txt);
-    e("</div>");
-    e("</div>");
-}
-
-
