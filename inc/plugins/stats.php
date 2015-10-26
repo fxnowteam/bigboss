@@ -38,7 +38,7 @@ class stats(){
 	/**
 	  * Formulário para visualizar os dados coletados
 	  */
-	function visualiza($reload){
+	function visualiza($reload=false){
 		echo "<form name=\"form\" method=\"post\" action=\"?reload=ok\">";
 		echo "Estat&iacute;sticas mensais: ";
 		echo "<input name=\"anomes\" type=\"type\" value=\"".date("Y")."-mm\"><input type=\"submit\" value=\"ok\">";
