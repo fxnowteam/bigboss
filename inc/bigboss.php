@@ -106,7 +106,7 @@ function logoff($usuario, $senha, $destino){
  * @param string $destino
  */
 function is_autenticado($destino) {
-	if(is_on("usuarios") == false){
+	if(is_on() == false){
 		e("Voc&ecirc; n&atilde;o est&aacute; logado! Redirecionando...");
 		e("<meta http-equiv=\"refresh\" content=\"0;URL=$destino\">");
 	}
