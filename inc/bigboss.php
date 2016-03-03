@@ -684,6 +684,7 @@ if(file_exists("plugins/nomedoarquivo.php")){
 	include("plugins/nomedoarquivo.php");
 }
 */
-if(file_exists("plugins/aliases.php")){
+#if(file_exists("plugins/aliases.php")){
 	include("plugins/aliases.php");
-}
+	include("plugins/bootstrap.php");
+#}

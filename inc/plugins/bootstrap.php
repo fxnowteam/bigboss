@@ -12,10 +12,6 @@ class bs {
 		if($tipo == 1){ $tipo = "warning"; }
 		?>
 			<div class="alert alert-dismissable alert-<?= $tipo ?>">
-				 
-				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-					×
-				</button>
 				<?= $texto ?>
 			</div>
 		<?
