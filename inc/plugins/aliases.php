@@ -80,7 +80,7 @@ function timezone($tz="America/Sao_Paulo"){
 
 //error reporting
 function error($var){
-	if($var == 0){ $var2 = "Off"; }else{ $var2 = "On" }
+	if($var == 0){ $var2 = "Off"; }else{ $var2 = "On"; }
 	error_reporting($var);
 	ini_set('display_errors','$var2');
 }
