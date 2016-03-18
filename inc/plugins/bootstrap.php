@@ -7,7 +7,7 @@ class bs {
 		return $return;
 	}
 	
-	function msg($texto,$tipo){
+	function msg($texto,$tipo=0){
 		if($tipo == 0){ $tipo = "info"; }
 		if($tipo == 1){ $tipo = "warning"; }
 		?>
